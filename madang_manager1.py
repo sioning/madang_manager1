@@ -1,15 +1,21 @@
-import streamlit as st 
-import pymysql
+import streamlit as st
+import duckdb
 import pandas as pd
-dbConn = pymysql.connect(user='root', passwd='1234', host='127.0.0.1', db='madang', charset='utf8')
-cursor = dbConn.cursor(pymysql.cursors.DictCursor)
 
+# DuckDB 파일에 연결 (없으면 자동 생성)
+conn = duckdb.connect("madang.duckdb")
+
+# Streamlit UI
 name = st.text_input("고객명")
-if name is not None:
-    sql = "select c.name, b.bookname, o.orderdate, o.saleprice from Customer c, Book b, Orders o \
-           where c.custid = o.custid and o.bookid = b.bookid and name = '" + name + "';"
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    result = pd.DataFrame(result)
+
+if name:
+    sql = f"""
+        SELECT c.name, b.bookname, o.orderdate, o.saleprice
+        FROM Customer c
+        JOIN Orders o ON c.custid = o.custid
+        JOIN Book b ON o.bookid = b.bookid
+        WHERE c.name = '{name}'
+    """
+    result = conn.execute(sql).df()
     st.write(result)
 
