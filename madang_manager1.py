@@ -1,7 +1,7 @@
 import streamlit as st 
 import pymysql
 import pandas as pd
-dbConn = pymysql.connect(user='remote_user', passwd='chari0t12#4%', host='192.168.145.128', db='madang', charset='utf8')
+dbConn = pymysql.connect(user='root', passwd='1234', host='127.0.0.1', db='madang', charset='utf8')
 cursor = dbConn.cursor(pymysql.cursors.DictCursor)
 
 name = st.text_input("고객명")
@@ -12,3 +12,4 @@ if name is not None:
     result = cursor.fetchall()
     result = pd.DataFrame(result)
     st.write(result)
+
